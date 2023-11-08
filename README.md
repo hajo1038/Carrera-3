@@ -14,3 +14,6 @@ Ein kleines Codebeispiel um den Stromsensor in Betrieb zu nehmen.
 
 ## remote_logging
 Enthält die Programme, welche auf dem PC ausgeführt werden um die Kameradaten und Sensordaten auf dem PC zu empfangen und auszuwerten.
+
+## hall_sensor.py
+Enthält die HallSensor Klasse, die eine Methode zum auslesen der gefilterten bzw. ungefilterten Drehzahl enthält.
