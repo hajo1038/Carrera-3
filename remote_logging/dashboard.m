@@ -64,8 +64,8 @@ function update_plots(~, ~, socket)
 %function update_plots(socket,~)
     data = read(socket, 6, 'int32'); % Read 24 bytes as 6 int32 values
     %video_data = read(socket, socket.NumBytesAvailable);
-    video_data = readline(socket);
-    res = matlab.net.base64decode(video_data)
+    %video_data = readline(socket);
+    %res = matlab.net.base64decode(video_data)
     %video_data_uint8 = uint8(video_data);
     %video_data_bin = dec2bin(video_data_uint8);
     img_height = 240;
@@ -73,30 +73,36 @@ function update_plots(~, ~, socket)
     flush(socket);
     sensor_data = data';
     f = gcf;
+    current_time = toc;
     for i = 1:6
         j = 7-i; %Children order is reversed, therefore use j for children
         f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)];
-        f.Children(j).Children.XData = [f.Children(j).Children.XData toc];
+        f.Children(j).Children.XData = [f.Children(j).Children.XData current_time];
         %f.Children(i).YLim = [min(f.Children(i).Children.YData(end-10)), max(f.Children(i).Children.YData(end))];
-        f.Children(j).XLim = [toc-5, toc+5];
+        f.Children(j).XLim = [current_time-5, current_time+5];
     end
-    % Update plot limits if needed
-    %xlim([max(0, numel(get(plot_data1, 'YData')) - 100), numel(get(plot_data1, 'YData'))]);
-    %ylim([-100 100]);
 end
 
 % Create a function to clean up and close the UDP connection when done
 function cleanup(~, ~, timer_t)
     clear global udp_socket;
     f = gcf;
+    
+    %save the timestamps
+    sensor_data(1:length(f.Children(1).Children.XData), 1) = f.Children(1).Children.XData;
+    for i = 1:6
+        j = 7-i; %Children order is reversed, therefore use j for children
+        sensor_data(1:length(f.Children(j).Children.YData), i+1) = f.Children(j).Children.YData;
+    end
+
+    file_count = 0;
+    while isfile(sprintf("Carrera_Daten_%u.csv",file_count))
+        file_count = file_count+1;
+    end
+    filename = sprintf("Carrera_Daten_%u.csv",file_count);
+    writematrix(sensor_data, filename);
     stop(timer_t);
     delete(timer_t);
     clear timer_t;
     delete(gcf); % Close the figure
-    i = 0;
-    while isfile(sprintf("Carrera_Daten_%u.mat",i))
-        i = i+1;
-    end
-    filename = sprintf("Carrera_Daten_%u.mat",i);
-    save(filename, 'f')
 end
