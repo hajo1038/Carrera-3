@@ -54,7 +54,7 @@ LED3.value(0)
 
 
 lsm = LSM6DSOX(SPI(5), cs_pin=Pin("PF6", Pin.OUT_PP, Pin.PULL_UP)) # initialize acc/gyro
-# -----connect_to_AP()
+connect_to_AP()
 
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # setup socket with UDP
 
@@ -104,12 +104,12 @@ while True:
         averaged_current_flag = False
 
     # ----- debug
-    print(f"non filtered RPM: {rpm_unfiltered}")
-    print(f"filtered rpm : {rpm_filtered}")
-    print(f"filtered current : {current_averaged}")
+    # print(f"non filtered RPM: {rpm_unfiltered}")
+    # print(f"filtered rpm : {rpm_filtered}")
+    # print(f"filtered current : {current_averaged}")
 
-    time.sleep(0.1)
-    # -----server_socket.sendto(send_buffer,("192.168.1.2",4210))
+    # time.sleep(0.1)
+    server_socket.sendto(send_buffer,("192.168.1.2",4210))
     #msg,client_addr = server_socket.recvfrom(BUFF_SIZE)
     #print('GOT connection from ',client_addr)
     #print(pyb.micros() - start)
