@@ -19,8 +19,8 @@ class CurrentSensor:
 
 
     def get_actual_current(self):
-        return self.ina.current()
-
+        actual_current = self.ina.current() * (-1.0)
+        return actual_current
 
 
     def get_averaged_current(self):

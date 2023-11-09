@@ -1,6 +1,8 @@
 from machine import Pin
 import time
 
+#ISR eventuell in anderen Thread?
+
 class HallSensor:
     def __init__(self, hall_pin, timeout_ms=500):
         self.hall_pin = Pin(hall_pin, Pin.IN)
@@ -30,12 +32,18 @@ class HallSensor:
         self.rpm_filtered = sum(self.readings) / (self.windows_size)
         self.averaged_current_flag = True
 
-    def get_rpm(self):
+    def get_rpm_unfiltered(self):
         # Check for a timeout and reset RPM if necessary
         current_time = time.ticks_ms()
         if (current_time - self.last_pulse_time) > self.timeout_ms:
-            self.rpm_unfiltered = 0
-            self.get_rpm_filtered = 0
+            self.rpm_unfiltered = 0.0
 
-        return self.rpm_unfiltered, self.rpm_filtered
+        return self.rpm_unfiltered
 
+
+    def get_rpm_filtered(self):
+        current_time = time.ticks_ms()
+        if (current_time - self.last_pulse_time) > self.timeout_ms:
+            self.rpm_filtered = 0.0
+
+        return self.rpm_filtered
