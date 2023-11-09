@@ -25,25 +25,25 @@ ylim auto
 
 subplot(3, 2, 5);
 plot(0, 0, 'b-');
-title('Beschleunigung in z');
+title('Drehrate in z');
 axis([0 100 -100 100]);
 ylim auto
 
 subplot(3, 2, 2);
 plot(0, 0, 'r-');
-title('Drehrate in x');
+title('Motorstrom in mA');
 axis([0 100 -100 100]);
 ylim auto
 
 subplot(3, 2, 4);
 plot(0, 0, 'g-');
-title('Drehrate in y');
+title('Drehzahl');
 axis([0 100 -100 100]);
 ylim auto
 
 subplot(3, 2, 6);
 plot(0, 0, 'b-');
-title('Drehrate in z');
+title('Drehzahl Mittelwert');
 axis([0 100 -100 100]);
 ylim auto
 
@@ -76,7 +76,13 @@ function update_plots(~, ~, socket)
     current_time = toc;
     for i = 1:6
         j = 7-i; %Children order is reversed, therefore use j for children
-        f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)];
+        if i == 1 || i == 2 || i == 3
+            f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)/100];
+        elseif i == 4
+            f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)/1000];
+        else
+            f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)];
+        end
         f.Children(j).Children.XData = [f.Children(j).Children.XData current_time];
         %f.Children(i).YLim = [min(f.Children(i).Children.YData(end-10)), max(f.Children(i).Children.YData(end))];
         f.Children(j).XLim = [current_time-5, current_time+5];
