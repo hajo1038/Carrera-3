@@ -7,7 +7,7 @@ class CurrentSensor:
         self.I2C_INTERFACE_NO = 1 #select I2C Interface
         self.SHUNT_OHMS = 0.1 #value of shunt resistor in ohm
         self.ina = INA219(self.SHUNT_OHMS, I2C(self.I2C_INTERFACE_NO)) #creates instance of class
-        self.ina.configure(self.ina.RANGE_16V)
+        self.ina.configure(self.ina.RANGE_16V, self.ina.GAIN_8_320MV)
 
          # Moving average for current measurement
         self.current_windows_size = 4
