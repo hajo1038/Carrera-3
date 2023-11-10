@@ -1,3 +1,5 @@
+%ToDO: Skalierung anpassen
+
 % Create a UDP socket
 udp_ip = '192.168.1.2';
 udp_port = 4210;
@@ -31,19 +33,19 @@ ylim auto
 
 subplot(3, 2, 2);
 plot(0, 0, 'r-');
-title('Motorstrom in mA');
+title('Drehzahl');
 axis([0 100 -100 100]);
 ylim auto
 
 subplot(3, 2, 4);
 plot(0, 0, 'g-');
-title('Drehzahl');
+title('Drehzahl Mittelwert');
 axis([0 100 -100 100]);
 ylim auto
 
 subplot(3, 2, 6);
 plot(0, 0, 'b-');
-title('Drehzahl Mittelwert');
+title('Motorstrom in mA');
 axis([0 100 -100 100]);
 ylim auto
 
@@ -78,7 +80,7 @@ function update_plots(~, ~, socket)
         j = 7-i; %Children order is reversed, therefore use j for children
         if i == 1 || i == 2 || i == 3
             f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)/100];
-        elseif i == 4
+        elseif i == 6
             f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)/1000];
         else
             f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)];
