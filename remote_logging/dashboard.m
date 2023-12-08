@@ -50,7 +50,7 @@ axis([0 100 -100 100]);
 ylim auto
 
 % Set up a timer for updating plots
-update_interval = 0.05; % Update every 50 milliseconds
+update_interval = 0.02; % Update every 20 milliseconds
 t = timer('ExecutionMode', 'fixedRate', 'Period', update_interval);
 t.TimerFcn = {@update_plots, udp_socket};
 start(t);
@@ -64,7 +64,7 @@ uiwait(gcf);
 
 function update_plots(~, ~, socket)
 %function update_plots(socket,~)
-    data = read(socket, 6, 'int32'); % Read 24 bytes as 6 int32 values
+    data = read(socket, 7, 'int32'); % Read 24 bytes as 6 int32 values
     %video_data = read(socket, socket.NumBytesAvailable);
     %video_data = readline(socket);
     %res = matlab.net.base64decode(video_data)
@@ -74,17 +74,17 @@ function update_plots(~, ~, socket)
     img_width = 320;
     flush(socket);
     sensor_data = data';
+    sensor_data(1) = sensor_data(1)/10000;
+    sensor_data(2) = sensor_data(2)/10000;
+    sensor_data(3) = sensor_data(3)/10000;
+    sensor_data(4) = sensor_data(2)/10000;
+    sensor_data(6) = sensor_data(6)/1000;
+    current_time = sensor_data(7)/1000;
     f = gcf;
-    current_time = toc;
+    %current_time = toc;
     for i = 1:6
         j = 7-i; %Children order is reversed, therefore use j for children
-        if i == 1 || i == 2 || i == 3
-            f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)/100];
-        elseif i == 6
-            f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)/1000];
-        else
-            f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)];
-        end
+        f.Children(j).Children.YData = [f.Children(j).Children.YData sensor_data(i)];
         f.Children(j).Children.XData = [f.Children(j).Children.XData current_time];
         %f.Children(i).YLim = [min(f.Children(i).Children.YData(end-10)), max(f.Children(i).Children.YData(end))];
         f.Children(j).XLim = [current_time-5, current_time+5];
@@ -95,7 +95,6 @@ end
 function cleanup(~, ~, timer_t)
     clear global udp_socket;
     f = gcf;
-    
     %save the timestamps
     sensor_data(1:length(f.Children(1).Children.XData), 1) = f.Children(1).Children.XData;
     for i = 1:6
